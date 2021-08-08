@@ -1,0 +1,20 @@
+CHIP Mux4Way {
+    IN a, b, c, d, sel[2];
+    OUT out;
+
+    PARTS:
+    // negate selects for later use
+    Not (in=sel[0], out=notSel0);
+    Not (in=sel[1], out=notSel1);
+
+    // and together the inputs with select bits
+    And3Way (in[0]=a, in[1]=notSel0, in[2]=notSel1, out=selA);
+    And3Way (in[0]=b, in[1]=sel[0], in[2]=notSel1, out=selB);
+    And3Way (in[0]=c, in[1]=notSel0, in[2]=sel[1], out=selC);
+    And3Way (in[0]=d, in[1]=sel[0], in[2]=sel[1], out=selD);
+
+    // or outputs together
+    Or (a=selA, b=selB, out=aOrb);
+    Or (a=aOrb, b=selC, out=aOrbOrc);
+    Or (a=aOrbOrc, b=selD, out=out);
+}
