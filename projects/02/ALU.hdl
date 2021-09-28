@@ -43,4 +43,6 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+    And (a=zx, b=true, out=zeroX); 
+    And16 (a=x, 
 }
