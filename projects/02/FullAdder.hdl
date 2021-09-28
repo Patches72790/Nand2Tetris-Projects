@@ -14,4 +14,42 @@ CHIP FullAdder {
 
     PARTS:
     // Put you code here:
+
+    // Sum = A ^ B ^ C
+    Xor (a=a, b=b, out=aplusb);
+    Xor (a=aplusb, b=c, out=sum);
+
+    // Carry = (A & B) | ((A ^ B) & C)
+    And (a=a, b=b, out=AAndB);
+    And (a=aplusb, b=c, out=AXorBAndC);
+    Or  (a=AAndB, b=AXorBAndC, out=carry);
+/*
+    Another equality for carry result
+    (!A & B & C) | (A &!B & C) | (A & B & !C) | (A & B & C)
+   
+    
+    Not (in=a, out=Nota);
+    Not (in=b, out=Notb);
+    Not (in=c, out=Notc);
+
+    // !A & B & C
+    And (a=Nota, b=b, out=NotAAndB);
+    And (a=NotAAndB, b=c, out=NotAAndBAndC);
+
+    // A & !B & C
+    And (a=a, b=Notb, out=AandNotB);
+    And (a=AandNotB, b=c, out=AandNotBandC);
+
+    // A & B & !C
+    And (a=a, b=b, out=AAndB);
+    And (a=AAndB, b=Notc, out=AAndBAndNotC);
+
+    // A & B & C
+    And (a=AAndB, b=c, out=AAndBAndC);
+
+    // carry = Or four results
+    Or (a=NotAAndBAndC, b=AandNotBandC, out=first);
+    Or (a=first, b=AAndBAndNotC, out=second);
+    Or (a=second, b=AAndBAndC, out=carry);
+*/
 }
