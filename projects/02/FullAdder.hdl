@@ -20,8 +20,8 @@ CHIP FullAdder {
     Xor (a=aplusb, b=c, out=sum);
 
     // Carry = (A & B) | ((A ^ B) & C)
-    And (a=a, b=b, out=AAndB);
-    And (a=aplusb, b=c, out=AXorBAndC);
+    And (a=a, b=b, out=AAndB); // Generator
+    And (a=aplusb, b=c, out=AXorBAndC); // Propagator
     Or  (a=AAndB, b=AXorBAndC, out=carry);
 /*
     Another equality for carry result
