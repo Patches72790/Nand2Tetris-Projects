@@ -42,7 +42,29 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
-    And (a=zx, b=true, out=zeroX); 
-    And16 (a=x, 
+
+    // Zero and Not inputs
+    And16 (a=x, b=false, out=XZeroed);
+    And16 (a=y, b=false, out=YZeroed);
+
+    // Multiplex the different choices based on inputs
+    Mux16 (a=x, b=XZeroed, sel=zx, out=XStep1);
+    Not16 (in=XStep1, out=NotX);
+    Mux16 (a=XStep1, b=NotX, sel=nx, out=XStep2);
+
+    // multiplex y choices
+    Mux16 (a=y, b=YZeroed, sel=zy, out=YStep1);
+    Not16 (in=YStep1, out=NotY);
+    Mux16 (a=YStep1, b=NotY, sel=ny, out=YStep2);
+
+    // add, and here
+    Add16 (a=XStep2, b=YStep2, out=XPlusY, overflow=XYOverflow);
+    And16 (a=XStep2, b=YStep2, out=XAndY);
+
+    // Decide between & and +
+    Mux16 (a=XAndY, b=XPlusY, sel=f, out=preOutput);
+
+    // negate output?
+    Not16 (in=preOutput, out=notOutput);
+    Mux16 (a=preOutput, b=notOutput, sel=no, out=out);
 }

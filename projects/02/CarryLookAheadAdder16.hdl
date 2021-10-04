@@ -1,0 +1,14 @@
+/**
+ * Adds two 16-bit values.
+ * utilizing the carry lookahead adding procedure
+ * instead of the ripple carry method used in Add16.
+ */
+
+CHIP CLAAdder16 {
+    IN a[16], b[16];
+    OUT out[16], overflow;
+
+    PARTS:
+    // implementation here
+
+}
