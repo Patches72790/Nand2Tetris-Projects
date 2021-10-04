@@ -16,7 +16,11 @@ CHIP Mux {
     PARTS:
     // Put your code here:
     Not (in=sel, out=notSel);
-    And (a=a, b=notSel, out=selA);
-    And (a=b, b=sel, out=selB);
-    Or (a=selA, b=selB, out=out);
+//    And (a=a, b=notSel, out=selA);
+//    And (a=b, b=sel, out=selB);
+//    Or (a=selA, b=selB, out=out);
+
+    Nand (a=a, b=notSel, out=selA2);
+    Nand (a=b, b=sel, out=selB2);
+    Nand (a=selA2, b=selB2, out=out);
 }
