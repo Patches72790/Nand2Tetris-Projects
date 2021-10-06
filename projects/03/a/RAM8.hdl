@@ -16,4 +16,23 @@ CHIP RAM8 {
 
     PARTS:
     // Put your code here:
+    //-- TODO need to find how to select input from addr to 2^addr
+    //-- Make DMux8Way16 to select only
+    DMux8Way16 (in=in, sel=address, a=ain, b=bin,
+                                    c=cin, d=din,
+                                    e=ein, f=fin,
+                                    g=gin, h=hin);
+
+    Register (in=ain, load=load, out=aout);
+    Register (in=bin, load=load, out=bout);
+    Register (in=cin, load=load, out=cout);
+    Register (in=din, load=load, out=dout);
+    Register (in=ein, load=load, out=eout);
+    Register (in=fin, load=load, out=fout);
+    Register (in=gin, load=load, out=gout);
+    Register (in=hin, load=load, out=hout);
+
+    Mux8Way16(a=aout, b=bout, c=cout, d=dout,
+        e=eout, f=fout, g=gout, h=hout,
+        sel=address, out=out);
 }
