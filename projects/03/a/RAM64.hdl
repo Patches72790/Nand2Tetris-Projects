@@ -15,5 +15,8 @@ CHIP RAM64 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    /* TODO...  need to implement this with RAM8 somehow...
+    RAM8 (in=in, load=load, address=address, out=out);
+    RAM8 (in=in, load=load, address=address, out=out);
+    */
 }
