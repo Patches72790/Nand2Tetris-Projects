@@ -1,0 +1,25 @@
+/**
+ * A 3 bit to 2^3 decoder chip for decoding
+ * bits into their appropriate bit pattern outputs.
+ * 
+ * The selected bit pattern is output as a 1, while
+ * the unselected bits are output as 0.
+ */
+CHIP Decoder3to8 {
+    IN sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    Not (in=sel[0], out=notSel0);
+    Not (in=sel[1], out=notSel1);
+    Not (in=sel[2], out=notSel2);
+
+    And3Way (in[0]=notSel0, in[1]=notSel1, in[2]=notSel2, out=a);
+    And3Way (in[0]=sel[0], in[1]=notSel1, in[2]=notSel2, out=b);
+    And3Way (in[0]=notSel0, in[1]=sel[1], in[2]=notSel2, out=c);
+    And3Way (in[0]=sel[0], in[1]=sel[1], in[2]=notSel2, out=d);
+    And3Way (in[0]=notSel0, in[1]=notSel1, in[2]=sel[2], out=e);
+    And3Way (in[0]=sel[0], in[1]=notSel1, in[2]=sel[2], out=f);
+    And3Way (in[0]=notSel0, in[1]=sel[1], in[2]=sel[2], out=g);
+    And3Way (in[0]=sel[0], in[1]=sel[1], in[2]=sel[2], out=h);
+}
