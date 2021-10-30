@@ -67,4 +67,6 @@ CHIP ALU {
     // negate output?
     Not16 (in=preOutput, out=notOutput);
     Mux16 (a=preOutput, b=notOutput, sel=no, out=out);
+
+    // -- TODO need to finish the status registers on completion
 }

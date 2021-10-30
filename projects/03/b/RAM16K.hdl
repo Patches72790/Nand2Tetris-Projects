@@ -16,4 +16,22 @@ CHIP RAM16K {
 
     PARTS:
     // Put your code here:
+    /* Decode the higher 3 bits to find RAM chip to use mod 8*/
+    Decoder2to4 (sel=address[12..13], a=selA, b=selB, c=selC, d=selD);
+
+    /* Select input or current value depending on load  */
+    Mux16 (a=aout, b=in, sel=selA, out=ain);
+    Mux16 (a=bout, b=in, sel=selB, out=bin);
+    Mux16 (a=cout, b=in, sel=selC, out=cin);
+    Mux16 (a=dout, b=in, sel=selD, out=din);
+
+    /* Use selected inputs to access RAM8 chips */
+    RAM4K (in=ain, load=load, address=address[0..11], out=aout);
+    RAM4K (in=bin, load=load, address=address[0..11], out=bout);
+    RAM4K (in=cin, load=load, address=address[0..11], out=cout);
+    RAM4K (in=din, load=load, address=address[0..11], out=dout);
+
+    /* Select appropriate output from RAM8 chips used */
+    Mux4Way16(a=aout, b=bout, c=cout, d=dout,
+                sel=address[12..13], out=out);
 }

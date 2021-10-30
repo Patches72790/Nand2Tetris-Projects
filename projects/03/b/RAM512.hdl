@@ -16,4 +16,32 @@ CHIP RAM512 {
 
     PARTS:
     // Put your code here:
+    Decoder3to8 (sel=address[6..8], a=selA, b=selB, c=selC, d=selD,
+                                    e=selE, f=selF, g=selG, h=selH);
+
+    /* Select input or current value depending on load  */
+    Mux16 (a=aout, b=in, sel=selA, out=ain);
+    Mux16 (a=bout, b=in, sel=selB, out=bin);
+    Mux16 (a=cout, b=in, sel=selC, out=cin);
+    Mux16 (a=dout, b=in, sel=selD, out=din);
+    Mux16 (a=eout, b=in, sel=selE, out=ein);
+    Mux16 (a=fout, b=in, sel=selF, out=fin);
+    Mux16 (a=gout, b=in, sel=selG, out=gin);
+    Mux16 (a=hout, b=in, sel=selH, out=hin);
+
+    /* Use selected inputs to access RAM8 chips */
+    RAM64 (in=ain, load=load, address=address[0..5], out=aout);
+    RAM64 (in=bin, load=load, address=address[0..5], out=bout);
+    RAM64 (in=cin, load=load, address=address[0..5], out=cout);
+    RAM64 (in=din, load=load, address=address[0..5], out=dout);
+    RAM64 (in=ein, load=load, address=address[0..5], out=eout);
+    RAM64 (in=fin, load=load, address=address[0..5], out=fout);
+    RAM64 (in=gin, load=load, address=address[0..5], out=gout);
+    RAM64 (in=hin, load=load, address=address[0..5], out=hout);
+
+    /* Select appropriate output from RAM8 chips used */
+    Mux8Way16(a=aout, b=bout, c=cout, d=dout,
+                e=eout, f=fout, g=gout, h=hout,
+                sel=address[6..8], out=out);
+
 }

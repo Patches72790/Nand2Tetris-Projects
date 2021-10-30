@@ -16,5 +16,20 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    /* Decide on reset, load, or increment? */
+    Mux16 (a=regOut, b=incremented, sel=inc, out=outOrIncr);
+    Mux16 (a=outOrIncr, b=in, sel=load, out=outOrIncrOrIn);
+    Mux16 (a=outOrIncrOrIn, b=zeroed, sel=reset, out=finalChoice);
+
+    /* logic for increment and reset */
+    Inc16 (in=regOut, out=incremented);
+    And16 (a=regOut, b=false, out=zeroed);
+
+    /* If any of control bits are set, then register needs to be loaded */
+    Or (a=load, b=reset, out=loadOrReset);
+    Or (a=loadOrReset, b=inc, out=doLoad);
+
+    /* use choice as input, whichever control bit is set, and
+        feed output back into control logic */
+    Register (in=finalChoice, load=doLoad, out=regOut, out=out);
 }

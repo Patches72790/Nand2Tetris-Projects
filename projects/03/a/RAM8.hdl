@@ -15,5 +15,35 @@ CHIP RAM8 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    /* Find the correct address to read to */
+    Decoder3to8 (sel=address, a=selA, b=selB, 
+                          c=selC, d=selD, 
+                          e=selE, f=selF, 
+                          g=selG, h=selH);
+
+    /* Use selector mux to either read/write from input or current
+        output of each register based on selected address */
+    Mux16 (a=aout, b=in, sel=selA, out=ain);
+    Mux16 (a=bout, b=in, sel=selB, out=bin);
+    Mux16 (a=cout, b=in, sel=selC, out=cin);
+    Mux16 (a=dout, b=in, sel=selD, out=din);
+    Mux16 (a=eout, b=in, sel=selE, out=ein);
+    Mux16 (a=fout, b=in, sel=selF, out=fin);
+    Mux16 (a=gout, b=in, sel=selG, out=gin);
+    Mux16 (a=hout, b=in, sel=selH, out=hin);
+
+    /* Actual array of registers 16bits x 8 */
+    Register (in=ain, load=load, out=aout);
+    Register (in=bin, load=load, out=bout);
+    Register (in=cin, load=load, out=cout);
+    Register (in=din, load=load, out=dout);
+    Register (in=ein, load=load, out=eout);
+    Register (in=fin, load=load, out=fout);
+    Register (in=gin, load=load, out=gout);
+    Register (in=hin, load=load, out=hout);
+
+    /* Output the selected address as specified by address bits */
+    Mux8Way16(a=aout, b=bout, c=cout, d=dout,
+        e=eout, f=fout, g=gout, h=hout,
+        sel=address, out=out);
 }
