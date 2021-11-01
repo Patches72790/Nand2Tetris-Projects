@@ -12,25 +12,56 @@
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
-@SCREEN
-M=-1
-A=A+1
-M=-1
-
-
-(LOAD)
-@SCREEN
-D=A
-@0
-M=D
-@KEYBOARD
-0;JMP
-
-
-(KEYBOARD)
+(CHECK)
 @24576
 D=M
+@PRE_LOAD
+D;JNE
+
+// sets the beginning of screen ptr var
+@SCREEN
+D=A
+@scr_ptr
+M=D
+
+// clears the screen
+(CLEAR)
+@scr_ptr
+A=M
+M=0
+@scr_ptr
+A=M
+A=A+1
+D=A
+@scr_ptr
+M=D
+@24576
+D=A-D
+@CLEAR
+D;JGT
+@CHECK
+0;JMP
+
+// sets the beginning of screen ptr var
+(PRE_LOAD)
+@SCREEN
+D=A
+@scr_ptr
+M=D
+
+(LOAD)
+@scr_ptr
+A=M
+M=-1
+@scr_ptr
+A=M
+A=A+1
+D=A
+@scr_ptr
+M=D
+@24576
+D=A-D
 @LOAD
 D;JGT
-@KEYBOARD
+@CHECK
 0;JMP
