@@ -17,28 +17,18 @@ CHIP RAM4K {
     PARTS:
     // Put your code here:
     /* Decode the higher 3 bits to find RAM chip to use mod 8*/
-    Decoder3to8 (sel=address[9..11], a=selA, b=selB, c=selC, d=selD,
+    DMux8Way (in=load, sel=address[9..11], a=selA, b=selB, c=selC, d=selD,
                                     e=selE, f=selF, g=selG, h=selH);
 
-    /* Select input or current value depending on load  */
-    Mux16 (a=aout, b=in, sel=selA, out=ain);
-    Mux16 (a=bout, b=in, sel=selB, out=bin);
-    Mux16 (a=cout, b=in, sel=selC, out=cin);
-    Mux16 (a=dout, b=in, sel=selD, out=din);
-    Mux16 (a=eout, b=in, sel=selE, out=ein);
-    Mux16 (a=fout, b=in, sel=selF, out=fin);
-    Mux16 (a=gout, b=in, sel=selG, out=gin);
-    Mux16 (a=hout, b=in, sel=selH, out=hin);
-
     /* Use selected inputs to access RAM8 chips */
-    RAM512 (in=ain, load=load, address=address[0..8], out=aout);
-    RAM512 (in=bin, load=load, address=address[0..8], out=bout);
-    RAM512 (in=cin, load=load, address=address[0..8], out=cout);
-    RAM512 (in=din, load=load, address=address[0..8], out=dout);
-    RAM512 (in=ein, load=load, address=address[0..8], out=eout);
-    RAM512 (in=fin, load=load, address=address[0..8], out=fout);
-    RAM512 (in=gin, load=load, address=address[0..8], out=gout);
-    RAM512 (in=hin, load=load, address=address[0..8], out=hout);
+    RAM512 (in=in, load=selA, address=address[0..8], out=aout);
+    RAM512 (in=in, load=selB, address=address[0..8], out=bout);
+    RAM512 (in=in, load=selC, address=address[0..8], out=cout);
+    RAM512 (in=in, load=selD, address=address[0..8], out=dout);
+    RAM512 (in=in, load=selE, address=address[0..8], out=eout);
+    RAM512 (in=in, load=selF, address=address[0..8], out=fout);
+    RAM512 (in=in, load=selG, address=address[0..8], out=gout);
+    RAM512 (in=in, load=selH, address=address[0..8], out=hout);
 
     /* Select appropriate output from RAM8 chips used */
     Mux8Way16(a=aout, b=bout, c=cout, d=dout,
