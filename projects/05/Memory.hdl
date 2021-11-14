@@ -28,19 +28,17 @@ CHIP Memory {
 
     PARTS:
     // Put your code here:
-    /* Decode bits 14 and 15 to choose RAM, Screen or KB */
-    Decoder2to4 (sel=address[13..14], a=selA, b=selB, c=selScreen, d=selKB);
-    /* combine first two options for memory access */
-    Or (a=selA, b=selB, out=selRAM);
+    /* Decode bit 15 to choose RAM, Screen or KB */
+    Not (in=address[14], out=selRAM);
 
     /* Select input or current value depending on load */
     Mux16 (a=RAMOut, b=in, sel=selRAM, out=RAMIn);
-    Mux16 (b=ScreenOut, b=in, sel=selScreen, out=ScreenIn);
+    Mux16 (b=ScreenOut, b=in, sel=address[14], out=ScreenIn);
 
     /* Access different parts of memory chips */
-    RAM32K  (in=RAMIn, load=load, address=address[0..14], out=RAMOut);
-    RAM32K  (in=ScreenIn, load=load, address=address[0..14], out=ScreenOut);
-    Register(in=false, load=false, out=KBOut);
+    RAM16K  (in=RAMIn, load=load, address=address[0..13], out=RAMOut);
+    Screen  (in=ScreenIn, load=load, address=address[0..12], out=ScreenOut);
+    Keyboard (out=KBOut);
 
     /* Choose which output to send from Memory */
     Mux4Way16 (a=RAMOut, b=RAMOut, c=ScreenOut, d=KBOut, sel=address[13..14], out=out);
