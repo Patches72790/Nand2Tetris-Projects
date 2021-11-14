@@ -1,0 +1,20 @@
+/**
+ * A 3 bit to 2^3 decoder chip for decoding
+ * bits into their appropriate bit pattern outputs.
+ * 
+ * The selected bit pattern is output as a 1, while
+ * the unselected bits are output as 0.
+ */
+CHIP Decoder2to4 {
+    IN sel[2];
+    OUT a, b, c, d;
+
+    PARTS:
+    Not (in=sel[0], out=notSel0);
+    Not (in=sel[1], out=notSel1);
+
+    And (a=notSel0, b=notSel1, out=a); 
+    And (a=sel[0],  b=notSel1,  out=b);
+    And (a=notSel0, b=sel[1],  out=c);
+    And (a=sel[0],  b=sel[1],   out=d);
+}
