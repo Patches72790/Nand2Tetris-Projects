@@ -39,22 +39,17 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    /* Decode instruction here */
-    And (a=instruction[15], b=true, out=isAInstr);
-
     /* Decode C Instruction here */
-    DecodeInstruction (instruction=instruction, comp=comp, dest=dest, jump=jump, useM= useM);
+    DecodeInstruction (instruction=instruction, comp=comp, dest=dest, jump=jump, useM=useM, isCInstr=isCInstr);
 
     /* If instr[15] == 0, then A instruction, else C instruction */
-    Mux16 (sel=isAInstr, a=instruction, b=ALUOut, out=RegAIn);
+/*     Mux16 (sel=isAInstr, a=instruction, b=ALUOut, out=RegAIn); */
 
     /* Register A should be loaded if it is an A instruction */
-    Not (in=isAInstr, out=DoLoadRegA);
-    Register (in=RegAIn, out=RegAOut, load=DoLoadRegA, out[0..14]=addressM);
+/*    Register (in=RegAIn, out=RegAOut, load=DoLoadRegA, out[0..14]=addressM); */
 
     /* Select RegA Out or Memory input for ALU */
-    Mux16 (sel=useM, a=RegAOut, b=inM, out=ALUInA);
-
+ /*   Mux16 (sel=useM, a=RegAOut, b=inM, out=ALUInA); */
 
     /* Register D here */ 
 
