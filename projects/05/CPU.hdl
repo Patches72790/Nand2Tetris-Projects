@@ -42,7 +42,7 @@ CHIP CPU {
     /* Decode C Instruction here */
     DecodeInstruction (instruction=instruction, 
                        c1=c1, c2=c2, c3=c3, c4=c4, c5=c5, c6=c6,
-                       d1=d1, d2=d2, d3=d3,
+                       d1=d1, d2=d2, d3=writeM, /* use d3 to write to memory directly */
                        j1=j1, j2=j2, j3=j3,
                        useM=useM, isCInstr=isCInstr);
 
@@ -50,13 +50,13 @@ CHIP CPU {
     Mux16 (sel=isCInstr, a=instruction, b=ALUOut, out=RegAIn);
 
     /* Register A should be loaded if it is an A instruction */
-    ARegister (in=RegAIn, out=RegAOut, load=isCInstr, out[0..14]=addressM);
+    ARegister (in=RegAIn, out=RegAOut, load=d1, out[0..14]=addressM);
 
     /* Select RegA Out or Memory input for ALU */
     Mux16 (sel=useM, a=RegAOut, b=inM, out=ALUInA);
 
     /* Register D is second input for ALU */ 
-    DRegister(in=ALUOut, out=RegDOut, load=isCInstr);
+    DRegister(in=ALUOut, out=RegDOut, load=d2);
 
     /* ALU Here */
     ALU (zx=c6, nx=c5, zy=c4, ny=c3, f=c2, no=c1, 
@@ -64,6 +64,8 @@ CHIP CPU {
          ng=NegativeOut, out=outM);
 
     /* Select the input from A register or increment PC */ 
-    /* Mux16 (sel=load, a=inM, b=RegAOut, out=PCIn);
-    PC (reset=reset, inc=???, in=PCIn, load=load, out=pc[0..14]); */
+    Or (a=j1, b=j2, out=j1Orj2);
+    Or (a=j1Orj2, b=j3, out=doLoad);
+    Not (in=doLoad, out=incrPC);
+    PC (reset=reset, inc=incrPC, in=RegAOut, load=doLoad, out[0..14]=pc);
 }
