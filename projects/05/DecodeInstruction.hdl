@@ -5,17 +5,36 @@
 CHIP DecodeInstruction {
     IN instruction[16];  /* the instruction to be decoded */
 
-    OUT comp[6], /* the computation of the instruction */
-        dest[3], /* the destination to place result of C instruction */ 
-        jump[3] ,/* the destination address to jump to from JMP instruction */
+    OUT c1, c2, c3, c4, c5, c6, /* the computation of the instruction */
+        d1, d2, d3, /* the destination to place result of C instruction */ 
+        j1, j2, j3,/* the destination address to jump to from JMP instruction */
         useM,    /* if instruction[12], then use Mem[A] else use A Reg */
         isCInstr; /* true if instruction[15] == 1, false if is A instruction */
 
     PARTS:
-    /* Bit masks here for output */
-    And16 (a[0..2]=true, a[3..15]=false, b=instruction, out[0..2]=jump, out[3..15]=false);
-    And16 (a[3..5]=true, a[0..2]=false, a[6..15]=false, b=instruction, out[0..2]=false, out[3..5]=dest, out[6..15]=false);
-    And16 (a[6..11]=true, a[0..5]=false, a[12..15]=false, b=instruction, out[0..5]=false, out[6..11]=comp, out[12..15]=false); 
-    And16 (a[12]=true, a[0..11]=false, a[13..15]=false, b=instruction, out[12]=useM, out[0..11]=false, out[13..15]=false);
-    And16 (a[15]=true, a[0..14]=false, b=instruction, out[15]=isCInstr, out[0..14]=false);
+    /* Bits 0-2 used for j3, j2, j1 */
+    And (a=instruction[0], b=true, out=j3);
+    And (a=instruction[1], b=true, out=j2);
+    And (a=instruction[2], b=true, out=j1);
+
+    /* Bits 3-5 used for d3, d2, d1 */
+    And (a=instruction[3], b=true, out=d3);
+    And (a=instruction[4], b=true, out=d2);
+    And (a=instruction[5], b=true, out=d1);
+
+    /* Bits 6-11 used for c6-c1 respectively */
+    And (a=instruction[6], b=true, out=c6);
+    And (a=instruction[7], b=true, out=c5);
+    And (a=instruction[8], b=true, out=c4);
+    And (a=instruction[9], b=true, out=c3);
+    And (a=instruction[10], b=true, out=c2);
+    And (a=instruction[11], b=true, out=c1);
+
+    /* Bits 13, 14 not used */
+
+    /* Bit 12 used for selecting A vs. M for C instruction */
+    And (a=instruction[12], b=true, out=useM);
+
+    /* Bit 15 used for A vs. C instruction selection */
+    And (a=instruction[15], b=true, out=isCInstr);
 }

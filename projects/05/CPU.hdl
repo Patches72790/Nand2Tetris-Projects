@@ -40,21 +40,28 @@ CHIP CPU {
 
     PARTS:
     /* Decode C Instruction here */
-    DecodeInstruction (instruction=instruction, comp=comp, dest=dest, jump=jump, useM=useM, isCInstr=isCInstr);
+    DecodeInstruction (instruction=instruction, 
+                       c1=c1, c2=c2, c3=c3, c4=c4, c5=c5, c6=c6,
+                       d1=d1, d2=d2, d3=d3,
+                       j1=j1, j2=j2, j3=j3,
+                       useM=useM, isCInstr=isCInstr);
 
     /* If instr[15] == 0, then A instruction, else C instruction */
-/*     Mux16 (sel=isAInstr, a=instruction, b=ALUOut, out=RegAIn); */
+    Mux16 (sel=isCInstr, a=instruction, b=ALUOut, out=RegAIn);
 
     /* Register A should be loaded if it is an A instruction */
-/*    Register (in=RegAIn, out=RegAOut, load=DoLoadRegA, out[0..14]=addressM); */
+    ARegister (in=RegAIn, out=RegAOut, load=isCInstr, out[0..14]=addressM);
 
     /* Select RegA Out or Memory input for ALU */
- /*   Mux16 (sel=useM, a=RegAOut, b=inM, out=ALUInA); */
+    Mux16 (sel=useM, a=RegAOut, b=inM, out=ALUInA);
 
-    /* Register D here */ 
-
+    /* Register D is second input for ALU */ 
+    DRegister(in=ALUOut, out=RegDOut, load=isCInstr);
 
     /* ALU Here */
+    ALU (zx=c6, nx=c5, zy=c4, ny=c3, f=c2, no=c1, 
+         x=ALUInA, y=RegDOut, out=ALUOut, zr=ZeroedOut, 
+         ng=NegativeOut, out=outM);
 
     /* Select the input from A register or increment PC */ 
     /* Mux16 (sel=load, a=inM, b=RegAOut, out=PCIn);
