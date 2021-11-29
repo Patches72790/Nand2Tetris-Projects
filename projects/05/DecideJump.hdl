@@ -1,5 +1,5 @@
 CHIP DecideJump {
-    IN j1, j2, j3 /* takes the jump instruction bits and the ALU condition codes */
+    IN j1, j2, j3, /* takes the jump instruction bits and the ALU condition codes */
        zr, ng;
 
     OUT shouldJump; /* Determines if the next address should be used from A Register or the incremented PC. */
@@ -11,11 +11,23 @@ CHIP DecideJump {
     Nand (a=Nandj1j2, b=j3, out=NONE);
 
     /* JGT == 001 ===> !zr & !ng */
+    Or (a=zr, b=ng, out=zrOrng);
+    Not (in=zrOrng, out=JGT);
+
     /* JEQ == 010 ===> zr        */
+    And (a=zr, b=true, out=JEQ);
+
     /* JGE == 011 ===> zr | !ng  */
+    Not (in=ng, out=NotNG);
+    Or (a=zr, b=NotNG, out=JGE);
+
     /* JLT == 100 ===> !zr & ng  */
     /* JNE == 101 ===> !zr       */
+    Not (in=zr, out=NotZR, out=JNE);
+    And (a=NotZR, b=ng, out=JLT);
+
     /* JLE == 110 ===> zr | ng   */
+    And (a=zrOrng, b=true, out=JLE);
     /* JMP == 111 ===> j3        */
 
     Mux8Way (sel[0]=j3, sel[1]=j2, sel[2]=j3,

@@ -1,0 +1,24 @@
+CHIP Mux8Way {
+    IN a, b, c, d, e, f, g, h, sel[3];
+    OUT out;
+
+    PARTS:
+    // negate selects for later use
+    Not (in=sel[0], out=notSel0);
+    Not (in=sel[1], out=notSel1);
+    Not (in=sel[2], out=notSel2);
+
+    // and together the inputs with select bits
+    And4Way (in[0]=a, in[1]=notSel0, in[2]=notSel1, in[3]=notSel2, out=selA);
+    And4Way (in[0]=b, in[1]=sel[0], in[2]=notSel1, in[3]=notSel2, out=selB);
+    And4Way (in[0]=c, in[1]=notSel0, in[2]=sel[1], in[3]=notSel2, out=selC);
+    And4Way (in[0]=d, in[1]=sel[0], in[2]=sel[1], in[3]=notSel2, out=selD);
+    And4Way (in[0]=e, in[1]=notSel0, in[2]=notSel1, in[3]=sel[2], out=selE);
+    And4Way (in[0]=f, in[1]=sel[0], in[2]=notSel1, in[3]=sel[2], out=selF);
+    And4Way (in[0]=g, in[1]=notSel0, in[2]=sel[1], in[3]=sel[2], out=selG);
+    And4Way (in[0]=h, in[1]=sel[0], in[2]=sel[1], in[3]=sel[2], out=selH);
+
+    // or outputs together
+    Or8Way (in[0]=selA, in[1]=selB, in[2]=selC, in[3]=selD,
+            in[4]=selE, in[5]=selF, in[6]=selG, in[7]=selH, out=out);
+}
