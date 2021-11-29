@@ -59,13 +59,12 @@ CHIP CPU {
     DRegister(in=ALUOut, out=RegDOut, load=d2);
 
     /* ALU Here */
-    ALU (zx=c6, nx=c5, zy=c4, ny=c3, f=c2, no=c1, 
-         x=ALUInA, y=RegDOut, out=ALUOut, zr=ZeroedOut, 
-         ng=NegativeOut, out=outM);
+    ALU (zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6, 
+         x=ALUInA, y=RegDOut, out=ALUOut, zr=zr, 
+         ng=ng, out=outM);
 
     /* Select the input from A register or increment PC */ 
-    Or (a=j1, b=j2, out=j1Orj2);
-    Or (a=j1Orj2, b=j3, out=doLoad);
-    Not (in=doLoad, out=incrPC);
-    PC (reset=reset, inc=incrPC, in=RegAOut, load=doLoad, out[0..14]=pc);
+    DecideJump(j1=j1, j2=j2, j3=j3, zr=zr, ng=ng, shouldJump=shouldJump);
+    Not (in=shouldJump, out=incrPC);
+    PC (reset=reset, inc=incrPC, in=RegAOut, load=shouldJump, out[0..14]=pc);
 }
