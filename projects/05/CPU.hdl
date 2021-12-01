@@ -42,29 +42,39 @@ CHIP CPU {
     /* Decode C Instruction here */
     DecodeInstruction (instruction=instruction, 
                        c1=c1, c2=c2, c3=c3, c4=c4, c5=c5, c6=c6,
-                       d1=d1, d2=d2, d3=writeM, /* use d3 to write to memory directly */
+                       d1=d1, d2=d2, d3=d3, /* use d3 to write to memory directly */
                        j1=j1, j2=j2, j3=j3,
                        useM=useM, isCInstr=isCInstr);
+    Not (in=isCInstr, out=isAInstr);
 
     /* If instr[15] == 0, then A instruction, else C instruction */
-    Mux16 (sel=isCInstr, a=instruction, b=ALUOut, out=RegAIn);
+    And (a=isCInstr, b=d1, out=useALUOut);
+    Mux16 (sel=useALUOut, a=instruction, b=ALUOut, out=RegAIn);
 
     /* Register A should be loaded if it is an A instruction */
-    ARegister (in=RegAIn, out=RegAOut, load=d1, out[0..14]=addressM);
+    Or (a=d1, b=isAInstr, out=loadA);
+    ARegister (in=RegAIn, out=RegAOut, load=loadA);
 
     /* Select RegA Out or Memory input for ALU */
     Mux16 (sel=useM, a=RegAOut, b=inM, out=ALUInA);
 
     /* Register D is second input for ALU */ 
-    DRegister(in=ALUOut, out=RegDOut, load=d2);
+    And (a=isCInstr, b=d2, out=loadD);
+    DRegister(in=ALUOut, out=RegDOut, load=loadD);
 
     /* ALU Here */
     ALU (zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6, 
-         x=ALUInA, y=RegDOut, out=ALUOut, zr=zr, 
-         ng=ng, out=outM);
+         y=ALUInA, x=RegDOut, out=ALUOut, zr=zr, ng=ng);
+
+    /* Set the outputs for memory writing */
+    Or16(a=false, b=RegAOut, out[0..14]=addressM);
+    Or16(a=false, b=ALUOut, out=outM);
+    And (a=isCInstr, b=d3, out=writeM);
 
     /* Select the input from A register or increment PC */ 
     DecideJump(j1=j1, j2=j2, j3=j3, zr=zr, ng=ng, shouldJump=shouldJump);
-    Not (in=shouldJump, out=incrPC);
-    PC (reset=reset, inc=incrPC, in=RegAOut, load=shouldJump, out[0..14]=pc);
+    /* Must be a C instruction and Jump  for loading PC*/
+    And (a=shouldJump, b=isCInstr, out=loadPC);
+    Not (in=loadPC, out=shouldIncr);
+    PC (reset=reset, inc=shouldIncr, in=RegAOut, load=loadPC, out[0..14]=pc);
 }

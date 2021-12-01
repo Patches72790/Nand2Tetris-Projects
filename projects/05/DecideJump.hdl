@@ -5,32 +5,48 @@ CHIP DecideJump {
     OUT shouldJump; /* Determines if the next address should be used from A Register or the incremented PC. */
 
     PARTS:
-    
+
+   And (a=j3, b=true, out=selJGT); // 001
+   And (a=j2, b=true, out=selJEQ); // 010
+   And (a=j3, b=j2,   out=selJGE); // 011
+   And (a=j1, b=true, out=selJLT); // 100
+   And (a=j1, b=j3,   out=selJNE); // 101
+   And (a=j1, b=j2,   out=selJLE); // 110
+
     /* NULL == 000 */
     Nand (a=j1, b=j2, out=Nandj1j2);
     Nand (a=Nandj1j2, b=j3, out=NONE);
 
+    /* JMP == 111 ===> j3        */
+   Not(in=NONE, out=JMP);    
+
+
     /* JGT == 001 ===> !zr & !ng */
     Or (a=zr, b=ng, out=zrOrng);
-    Not (in=zrOrng, out=JGT);
+    Not (in=zrOrng, out=jgt);
+    And (a=jgt, b=selJGT, out=JGT);
 
     /* JEQ == 010 ===> zr        */
-    And (a=zr, b=true, out=JEQ);
+    And (a=zr, b=true, out=jeq);
+    And (a=jeq, b=selJEQ, out=JEQ);
 
     /* JGE == 011 ===> zr | !ng  */
     Not (in=ng, out=NotNG);
-    Or (a=zr, b=NotNG, out=JGE);
+    Or (a=zr, b=NotNG, out=jge);
+    And (a=jge, b=selJGE, out=JGE);
+
+    /* JNE == 101 ===> !zr       */
+    Not (in=zr, out=NotZR, out=jne);
+    And (a=jne, b=selJNE, out=JNE);
 
     /* JLT == 100 ===> !zr & ng  */
-    /* JNE == 101 ===> !zr       */
-    Not (in=zr, out=NotZR, out=JNE);
-    And (a=NotZR, b=ng, out=JLT);
+    And (a=NotZR, b=ng, out=jlt);
+    And (a=jlt, b=selJLT, out=JLT);
 
     /* JLE == 110 ===> zr | ng   */
-    And (a=zrOrng, b=true, out=JLE);
-    /* JMP == 111 ===> j3        */
+    And (a=zrOrng, b=true, out=jle);
+   And (a=jle, b=selJLE, out=JLE);
 
-    Mux8Way (sel[0]=j3, sel[1]=j2, sel[2]=j3,
-             a=NONE, b=JGT, c=JEQ, d=JGE,
-             e=JLT , f=JNE, g=JLE, h=j3, out=shouldJump);
+   /* Should jump if any of the J-conditions are true */
+   Or8Way (in[0]=JGT, in[1]=JEQ, in[2]=JGE, in[3]=JLT, in[4]=JNE, in[5]=JLE, in[6]=JMP, in[7]=false, out=shouldJump);
 }
