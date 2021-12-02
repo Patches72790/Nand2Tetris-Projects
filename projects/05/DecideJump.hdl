@@ -6,20 +6,14 @@ CHIP DecideJump {
 
     PARTS:
 
-   And (a=j3, b=true, out=selJGT); // 001
-   And (a=j2, b=true, out=selJEQ); // 010
-   And (a=j3, b=j2,   out=selJGE); // 011
-   And (a=j1, b=true, out=selJLT); // 100
-   And (a=j1, b=j3,   out=selJNE); // 101
-   And (a=j1, b=j2,   out=selJLE); // 110
-
-    /* NULL == 000 */
-    Nand (a=j1, b=j2, out=Nandj1j2);
-    Nand (a=Nandj1j2, b=j3, out=NONE);
-
-    /* JMP == 111 ===> j3        */
-   Not(in=NONE, out=JMP);    
-
+    And (a=j3, b=true, out=selJGT); // 001
+    And (a=j2, b=true, out=selJEQ); // 010
+    And (a=j3, b=j2,   out=selJGE); // 011
+    And (a=j1, b=true, out=selJLT); // 100
+    And (a=j1, b=j3,   out=selJNE); // 101
+    And (a=j1, b=j2,   out=selJLE); // 110
+    And (a=j1, b=j2,   out=jmp);    // 111
+    And (a=jmp, b=j3,  out=JMP);
 
     /* JGT == 001 ===> !zr & !ng */
     Or (a=zr, b=ng, out=zrOrng);
@@ -45,8 +39,8 @@ CHIP DecideJump {
 
     /* JLE == 110 ===> zr | ng   */
     And (a=zrOrng, b=true, out=jle);
-   And (a=jle, b=selJLE, out=JLE);
+    And (a=jle, b=selJLE, out=JLE);
 
-   /* Should jump if any of the J-conditions are true */
-   Or8Way (in[0]=JGT, in[1]=JEQ, in[2]=JGE, in[3]=JLT, in[4]=JNE, in[5]=JLE, in[6]=JMP, in[7]=false, out=shouldJump);
+    /* Should jump if any of the J-conditions are true */
+    Or8Way (in[0]=JGT, in[1]=JEQ, in[2]=JGE, in[3]=JLT, in[4]=JNE, in[5]=JLE, in[6]=JMP, in[7]=false, out=shouldJump);
 }
