@@ -1,4 +1,4 @@
-use rust_assembler::Config;
+use rasm::Config;
 use std::env::args;
 
 fn main() {
@@ -9,4 +9,6 @@ fn main() {
         );
         std::process::exit(1);
     });
+
+    config.run();
 }

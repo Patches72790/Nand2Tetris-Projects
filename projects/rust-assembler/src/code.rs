@@ -1,8 +1,9 @@
-pub struct Code {
+pub struct CodeGenerator {}
 
-}
-
-impl Code {
+impl CodeGenerator {
+    pub fn new() -> CodeGenerator {
+        CodeGenerator {}
+    }
     pub fn dest() {}
 
     pub fn comp() {}
