@@ -1,5 +1,6 @@
 use crate::code::CodeGenerator;
 use crate::parser::Parser;
+use crate::DEBUG_MODE;
 use std::env::Args;
 use std::fs;
 
@@ -31,12 +32,23 @@ impl Config {
     }
 
     pub fn run(&self) {
-        for (i, line) in self.parser.input_stream.lines().enumerate() {
-            println!("Line {}: {}", i, line);
+        if !DEBUG_MODE.unwrap_or("").is_empty() {
+            for (i, line) in self.parser.input_stream.lines().enumerate() {
+                println!("Line {}: {}", i, line);
+            }
         }
+
+        // TODO -- Build symbol table for labels/address mappings
+
+        // parse input stream
         let commands = self.parser.parse_input();
-        for command in commands {
-            println!("Command: {:?}", command);
+
+        // TODO -- emit code based on commands read
+
+        if !DEBUG_MODE.unwrap_or("").is_empty() {
+            for command in commands {
+                println!("Command: {:?}", command);
+            }
         }
     }
 }

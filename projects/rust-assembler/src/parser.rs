@@ -40,9 +40,37 @@ pub enum JumpType {
     JMP,
 }
 
-// TODO -- add all comp mnemonic types
 #[derive(Debug)]
-pub enum CompType {}
+pub enum CompType {
+    Zero,
+    One,
+    NegOne,
+    D,
+    A,
+    M,
+    NotD,
+    NotA,
+    NotM,
+    NegD,
+    NegA,
+    NegM,
+    DplusOne,
+    AplusOne,
+    MplusOne,
+    DminusOne,
+    AminusOne,
+    MminusOne,
+    DplusA,
+    DplusM,
+    DminusA,
+    DminusM,
+    AminusD,
+    MminusD,
+    DandA,
+    DandM,
+    DorA,
+    DorM,
+}
 
 impl Parser {
     pub fn new(input_stream: String) -> Parser {
@@ -71,7 +99,6 @@ impl Parser {
             panic!("Error reading first character of line!");
         });
 
-        println!("First char: {}", first_char);
         match first_char {
             // parsing for A instructions
             '@' => Some(CommandType::ACommand(
@@ -96,7 +123,6 @@ impl Parser {
     /// A command (@XXX or (XXX)).
     /// Also returns the symbol for the L Command label
     fn symbol(&self, line: &str) -> AddrType {
-        println!("Symbol: {}", line);
         let number_or_sym = match line.parse::<i32>() {
             Ok(val) => Some(val),
             Err(_) => None,
@@ -122,8 +148,8 @@ impl Parser {
             }
 
             return CCommandType {
-                dest: self.dest(tokens[0]),
-                comp: None,
+                dest: None,
+                comp: self.comp(tokens[0]),
                 jump: self.jump(tokens[1]),
             };
         }
@@ -149,7 +175,37 @@ impl Parser {
     }
 
     fn comp(&self, token: &str) -> Option<CompType> {
-        todo!("Need to finish comp implementation!");
+        match token {
+            "0" => Some(CompType::Zero),
+            "1" => Some(CompType::One),
+            "-1" => Some(CompType::NegOne),
+            "D" => Some(CompType::D),
+            "A" => Some(CompType::A),
+            "!D" => Some(CompType::NotD),
+            "!A" => Some(CompType::NotA),
+            "-D" => Some(CompType::NegD),
+            "-A" => Some(CompType::NegA),
+            "D+1" => Some(CompType::DplusOne),
+            "A+1" => Some(CompType::AplusOne),
+            "D-1" => Some(CompType::DminusOne),
+            "A-1" => Some(CompType::AminusOne),
+            "D+A" => Some(CompType::DplusA),
+            "D-A" => Some(CompType::DminusA),
+            "A-D" => Some(CompType::AminusD),
+            "D&A" => Some(CompType::DandA),
+            "D|A" => Some(CompType::DorA),
+            "M" => Some(CompType::M),
+            "!M" => Some(CompType::NotM),
+            "-M" => Some(CompType::NegM),
+            "M+1" => Some(CompType::MplusOne),
+            "M-1" => Some(CompType::MminusOne),
+            "D+M" => Some(CompType::DplusM),
+            "D-M" => Some(CompType::DminusM),
+            "M-D" => Some(CompType::MminusD),
+            "D&M" => Some(CompType::DandM),
+            "D|M" => Some(CompType::DorM),
+            _ => None,
+        }
     }
 
     fn jump(&self, token: &str) -> Option<JumpType> {

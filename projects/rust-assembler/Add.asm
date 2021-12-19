@@ -1,10 +1,13 @@
-// Computes R0 = 2 + 3  (R0 refers to RAM[0])
+// Computes R0 ; 2 + 3  (R0 refers to RAM[0])
 
-
+(PROGRAM)
 @2
-D=A
+D;JGT
 @3
-AMD=D+A
+AMD;JGE
 @0
-M=D
+M;JMP
 @hello
+(END)
+@goodbyte
+AMD=M+1
