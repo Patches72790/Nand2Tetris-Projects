@@ -41,35 +41,45 @@ pub enum JumpType {
 }
 
 #[derive(Debug)]
-pub enum CompType {
+pub enum CompTypeA {
     Zero,
     One,
     NegOne,
     D,
     A,
-    M,
     NotD,
     NotA,
-    NotM,
     NegD,
     NegA,
-    NegM,
     DplusOne,
     AplusOne,
-    MplusOne,
     DminusOne,
     AminusOne,
-    MminusOne,
     DplusA,
-    DplusM,
     DminusA,
-    DminusM,
     AminusD,
-    MminusD,
     DandA,
-    DandM,
     DorA,
+}
+
+#[derive(Debug)]
+pub enum CompTypeM {
+    M,
+    NotM,
+    NegM,
+    MplusOne,
+    MminusOne,
+    DminusM,
+    DplusM,
+    MminusD,
+    DandM,
     DorM,
+}
+
+#[derive(Debug)]
+pub enum CompType {
+    M(CompTypeM),
+    A(CompTypeA),
 }
 
 impl Parser {
@@ -176,34 +186,34 @@ impl Parser {
 
     fn comp(&self, token: &str) -> Option<CompType> {
         match token {
-            "0" => Some(CompType::Zero),
-            "1" => Some(CompType::One),
-            "-1" => Some(CompType::NegOne),
-            "D" => Some(CompType::D),
-            "A" => Some(CompType::A),
-            "!D" => Some(CompType::NotD),
-            "!A" => Some(CompType::NotA),
-            "-D" => Some(CompType::NegD),
-            "-A" => Some(CompType::NegA),
-            "D+1" => Some(CompType::DplusOne),
-            "A+1" => Some(CompType::AplusOne),
-            "D-1" => Some(CompType::DminusOne),
-            "A-1" => Some(CompType::AminusOne),
-            "D+A" => Some(CompType::DplusA),
-            "D-A" => Some(CompType::DminusA),
-            "A-D" => Some(CompType::AminusD),
-            "D&A" => Some(CompType::DandA),
-            "D|A" => Some(CompType::DorA),
-            "M" => Some(CompType::M),
-            "!M" => Some(CompType::NotM),
-            "-M" => Some(CompType::NegM),
-            "M+1" => Some(CompType::MplusOne),
-            "M-1" => Some(CompType::MminusOne),
-            "D+M" => Some(CompType::DplusM),
-            "D-M" => Some(CompType::DminusM),
-            "M-D" => Some(CompType::MminusD),
-            "D&M" => Some(CompType::DandM),
-            "D|M" => Some(CompType::DorM),
+            "0" => Some(CompType::A(CompTypeA::Zero)),
+            "1" => Some(CompType::A(CompTypeA::One)),
+            "-1" => Some(CompType::A(CompTypeA::NegOne)),
+            "D" => Some(CompType::A(CompTypeA::D)),
+            "A" => Some(CompType::A(CompTypeA::A)),
+            "!D" => Some(CompType::A(CompTypeA::NotD)),
+            "!A" => Some(CompType::A(CompTypeA::NotA)),
+            "-D" => Some(CompType::A(CompTypeA::NegD)),
+            "-A" => Some(CompType::A(CompTypeA::NegA)),
+            "D+1" => Some(CompType::A(CompTypeA::DplusOne)),
+            "A+1" => Some(CompType::A(CompTypeA::AplusOne)),
+            "D-1" => Some(CompType::A(CompTypeA::DminusOne)),
+            "A-1" => Some(CompType::A(CompTypeA::AminusOne)),
+            "D+A" => Some(CompType::A(CompTypeA::DplusA)),
+            "D-A" => Some(CompType::A(CompTypeA::DminusA)),
+            "A-D" => Some(CompType::A(CompTypeA::AminusD)),
+            "D&A" => Some(CompType::A(CompTypeA::DandA)),
+            "D|A" => Some(CompType::A(CompTypeA::DorA)),
+            "M" => Some(CompType::M(CompTypeM::M)),
+            "!M" => Some(CompType::M(CompTypeM::NotM)),
+            "-M" => Some(CompType::M(CompTypeM::NegM)),
+            "M+1" => Some(CompType::M(CompTypeM::MplusOne)),
+            "M-1" => Some(CompType::M(CompTypeM::MminusOne)),
+            "D+M" => Some(CompType::M(CompTypeM::DplusM)),
+            "D-M" => Some(CompType::M(CompTypeM::DminusM)),
+            "M-D" => Some(CompType::M(CompTypeM::MminusD)),
+            "D&M" => Some(CompType::M(CompTypeM::DandM)),
+            "D|M" => Some(CompType::M(CompTypeM::DorM)),
             _ => None,
         }
     }

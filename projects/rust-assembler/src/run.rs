@@ -23,7 +23,7 @@ impl Config {
 
         let input_stream = match fs::read_to_string(filename) {
             Ok(input) => input,
-            Err(msg) => return Err("Error reading input from file."),
+            Err(_) => return Err("Error reading input from file."),
         };
         Ok(Config {
             parser: Parser::new(input_stream),
