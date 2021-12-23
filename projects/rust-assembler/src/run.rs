@@ -11,7 +11,7 @@ pub struct Config {
 
 impl Config {
     pub fn new(args: &mut Args) -> Result<Config, &'static str> {
-        if args.len() < 2 {
+        if args.len() < 2 || args.len() > 2 {
             return Err("Must provide filename as arg.\nUsage: rasm [filename]");
         }
         args.next();
