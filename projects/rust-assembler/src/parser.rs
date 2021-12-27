@@ -15,10 +15,18 @@ pub enum AddrType {
 }
 #[derive(Debug)]
 pub struct CCommandType {
-    dest: Option<DestType>,
-    comp: Option<CompType>,
-    jump: Option<JumpType>,
+    pub is_jmp_cmd: bool,
+    pub dest: Option<DestType>,
+    pub comp: Option<CompType>,
+    pub jump: Option<JumpType>,
 }
+
+impl CCommandType {
+    pub fn yield_c_cmd_parts(&self) {
+        todo!()
+    }
+}
+
 #[derive(Debug)]
 pub enum DestType {
     M,
@@ -158,6 +166,7 @@ impl Parser {
             }
 
             return CCommandType {
+                is_jmp_cmd: true,
                 dest: None,
                 comp: self.comp(tokens[0]),
                 jump: self.jump(tokens[1]),
@@ -165,6 +174,7 @@ impl Parser {
         }
 
         CCommandType {
+            is_jmp_cmd: false,
             dest: self.dest(comp_tokens[0]),
             comp: self.comp(comp_tokens[1]),
             jump: None,

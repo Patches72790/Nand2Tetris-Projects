@@ -44,6 +44,7 @@ impl Config {
         let commands = self.parser.parse_input();
 
         // TODO -- emit code based on commands read
+        let code = self.code_generator.emit_code();
 
         if !DEBUG_MODE.unwrap_or("").is_empty() {
             for command in commands {
