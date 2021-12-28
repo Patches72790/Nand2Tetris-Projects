@@ -4,7 +4,7 @@
 @2
 D;JGT
 @3
-AMD;JGE
+A;JGE
 @0
 M;JMP
 @hello

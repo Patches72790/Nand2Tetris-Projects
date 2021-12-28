@@ -44,11 +44,15 @@ impl Config {
         let commands = self.parser.parse_input();
 
         // TODO -- emit code based on commands read
-        let code = self.code_generator.emit_code();
+        let code = self.code_generator.emit_code(&commands);
 
         if !DEBUG_MODE.unwrap_or("").is_empty() {
             for command in commands {
                 println!("Command: {:?}", command);
+            }
+
+            for (i, line) in code.iter().enumerate() {
+                println!("Codegen: #{}: {:?}", i, line);
             }
         }
     }
