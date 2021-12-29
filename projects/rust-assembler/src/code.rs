@@ -1,4 +1,6 @@
-use crate::{AddrType, CCommandType, CommandType};
+use crate::{
+    AddrType, CCommandType, CommandType, CompType, CompTypeA, CompTypeM, DestType, JumpType,
+};
 
 pub struct CodeGenerator {}
 
@@ -42,6 +44,8 @@ impl CodeGenerator {
                             Some(part) => part,
                             None => panic!("Error, no dest command part in dest cmd!"),
                         };
+                        let comp_mnemonic = CodeGenerator::comp(&comp_part);
+                        let dest_mnemonic = CodeGenerator::dest(&dest_part);
                     }
                     "c_cmd:".to_string()
                 }
@@ -68,11 +72,17 @@ impl CodeGenerator {
         result.join("")
     }
 
-    fn dest() {}
+    fn dest(dest_part: &DestType) -> String {
+        todo!()
+    }
 
-    fn comp() {}
+    fn comp(comp_part: &CompType) -> String {
+        todo!()
+    }
 
-    fn jump() {}
+    fn jump(jump_part: &JumpType) -> String {
+        todo!()
+    }
 }
 
 #[cfg(test)]
