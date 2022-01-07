@@ -14,7 +14,12 @@ impl CodeGenerator {
             .iter()
             .map(|cmd| match cmd {
                 CommandType::ACommand(addr_type) => match addr_type {
-                    AddrType::Number(num) => CodeGenerator::to_bit_repr(num),
+                    AddrType::Number(num) => {
+                        let bits = CodeGenerator::to_bit_repr(num);
+                        let num_zeroes = 16 - bits.len();
+                        return vec!['0'; num_zeroes].iter().collect::<String>().to_string()
+                            + &bits;
+                    }
                     AddrType::Symbol(sym) => "VAR:".to_string() + &sym.to_string(), // todo lookup symbol for addr/value
                 },
                 CommandType::LCommand(addr_type) => match addr_type {
@@ -34,6 +39,9 @@ impl CodeGenerator {
                             Some(part) => part,
                             None => panic!("Error, no jump command part in jmp cmd!"),
                         };
+                        let comp_mnemonic = CodeGenerator::comp(&comp_part);
+                        let jump_mnemonic = CodeGenerator::jump(&jmp_part);
+                        return "111".to_string() + &comp_mnemonic + "000" + &jump_mnemonic;
                     } else {
                         let comp_part = match &c_cmd_type.comp {
                             Some(part) => part,
@@ -46,8 +54,8 @@ impl CodeGenerator {
                         };
                         let comp_mnemonic = CodeGenerator::comp(&comp_part);
                         let dest_mnemonic = CodeGenerator::dest(&dest_part);
+                        return "111".to_string() + &comp_mnemonic + &dest_mnemonic + "000";
                     }
-                    "c_cmd:".to_string()
                 }
             })
             .collect::<Vec<String>>()
@@ -73,15 +81,72 @@ impl CodeGenerator {
     }
 
     fn dest(dest_part: &DestType) -> String {
-        todo!()
+        match dest_part {
+            DestType::M => String::from("001"),
+            DestType::D => String::from("010"),
+            DestType::MD => String::from("011"),
+            DestType::A => String::from("100"),
+            DestType::AM => String::from("101"),
+            DestType::AD => String::from("110"),
+            DestType::AMD => String::from("111"),
+            _ => String::from("000"),
+        }
     }
 
     fn comp(comp_part: &CompType) -> String {
-        todo!()
+        match comp_part {
+            CompType::M(type_m) => {
+                let c_part = match type_m {
+                    &CompTypeM::M => String::from("110000"),
+                    &CompTypeM::NotM => String::from("110001"),
+                    &CompTypeM::NegM => String::from("110011"),
+                    &CompTypeM::MplusOne => String::from("110111"),
+                    &CompTypeM::MminusOne => String::from("110010"),
+                    &CompTypeM::DminusM => String::from("010011"),
+                    &CompTypeM::DplusM => String::from("000010"),
+                    &CompTypeM::MminusD => String::from("000111"),
+                    &CompTypeM::DandM => String::from("000000"),
+                    &CompTypeM::DorM => String::from("010101"),
+                };
+                return "1".to_string() + &c_part;
+            }
+            CompType::A(type_a) => {
+                let c_part = match type_a {
+                    &CompTypeA::Zero => String::from("101010"),
+                    &CompTypeA::One => String::from("111111"),
+                    &CompTypeA::NegOne => String::from("111010"),
+                    &CompTypeA::D => String::from("001100"),
+                    &CompTypeA::A => String::from("110000"),
+                    &CompTypeA::NotD => String::from("001101"),
+                    &CompTypeA::NotA => String::from("110001"),
+                    &CompTypeA::NegD => String::from("001111"),
+                    &CompTypeA::NegA => String::from("110011"),
+                    &CompTypeA::DplusOne => String::from("011111"),
+                    &CompTypeA::AplusOne => String::from("110111"),
+                    &CompTypeA::DminusOne => String::from("001110"),
+                    &CompTypeA::AminusOne => String::from("110010"),
+                    &CompTypeA::DplusA => String::from("000010"),
+                    &CompTypeA::DminusA => String::from("010011"),
+                    &CompTypeA::AminusD => String::from("000111"),
+                    &CompTypeA::DandA => String::from("000000"),
+                    &CompTypeA::DorA => String::from("010101"),
+                };
+                return "0".to_string() + &c_part;
+            }
+        }
     }
 
     fn jump(jump_part: &JumpType) -> String {
-        todo!()
+        match jump_part {
+            JumpType::JGT => String::from("001"),
+            JumpType::JEQ => String::from("010"),
+            JumpType::JGE => String::from("011"),
+            JumpType::JLT => String::from("100"),
+            JumpType::JNE => String::from("101"),
+            JumpType::JLE => String::from("110"),
+            JumpType::JMP => String::from("111"),
+            _ => String::from("000"),
+        }
     }
 }
 
