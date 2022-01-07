@@ -1,6 +1,4 @@
-use crate::{
-    AddrType, CCommandType, CommandType, CompType, CompTypeA, CompTypeM, DestType, JumpType,
-};
+use crate::{AddrType, CommandType, CompType, CompTypeA, CompTypeM, DestType, JumpType};
 
 pub struct CodeGenerator {}
 
@@ -23,7 +21,7 @@ impl CodeGenerator {
                     AddrType::Symbol(sym) => "VAR:".to_string() + &sym.to_string(), // todo lookup symbol for addr/value
                 },
                 CommandType::LCommand(addr_type) => match addr_type {
-                    AddrType::Number(num) => {
+                    AddrType::Number(_) => {
                         panic!("Cannot have number address type for LCommand symbol!")
                     }
                     AddrType::Symbol(sym) => "SYMBOL".to_string(), // lookup symbol in symtable for addr/value
@@ -89,7 +87,6 @@ impl CodeGenerator {
             DestType::AM => String::from("101"),
             DestType::AD => String::from("110"),
             DestType::AMD => String::from("111"),
-            _ => String::from("000"),
         }
     }
 
@@ -145,7 +142,6 @@ impl CodeGenerator {
             JumpType::JNE => String::from("101"),
             JumpType::JLE => String::from("110"),
             JumpType::JMP => String::from("111"),
-            _ => String::from("000"),
         }
     }
 }

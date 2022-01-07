@@ -1,6 +1,4 @@
-pub struct Parser {
-    pub input_stream: String,
-}
+pub struct Parser {}
 
 #[derive(Debug)]
 pub enum CommandType {
@@ -91,14 +89,14 @@ pub enum CompType {
 }
 
 impl Parser {
-    pub fn new(input_stream: String) -> Parser {
-        Parser { input_stream }
+    pub fn new() -> Parser {
+        Parser {}
     }
 
-    pub fn parse_input(&self) -> Vec<CommandType> {
+    pub fn parse_input(&self, input_stream: &String) -> Vec<CommandType> {
         let mut commands = vec![];
 
-        for line in self.input_stream.lines() {
+        for line in input_stream.lines() {
             if line.len() == 0 {
                 continue;
             }

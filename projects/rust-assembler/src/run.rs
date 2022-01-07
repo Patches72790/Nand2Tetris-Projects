@@ -1,5 +1,6 @@
 use crate::code::CodeGenerator;
 use crate::parser::Parser;
+use crate::SymTable;
 use crate::DEBUG_MODE;
 use std::env::Args;
 use std::fs;
@@ -7,6 +8,8 @@ use std::fs;
 pub struct Config {
     parser: Parser,
     code_generator: CodeGenerator,
+    symtable: SymTable,
+    input_stream: String,
 }
 
 impl Config {
@@ -26,22 +29,25 @@ impl Config {
             Err(_) => return Err("Error reading input from file."),
         };
         Ok(Config {
-            parser: Parser::new(input_stream),
+            parser: Parser::new(),
             code_generator: CodeGenerator::new(),
+            symtable: SymTable::new(),
+            input_stream,
         })
     }
 
     pub fn run(&self) {
         if !DEBUG_MODE.unwrap_or("").is_empty() {
-            for (i, line) in self.parser.input_stream.lines().enumerate() {
+            for (i, line) in self.input_stream.lines().enumerate() {
                 println!("Line {}: {}", i, line);
             }
         }
 
         // TODO -- Build symbol table for labels/address mappings
+        self.symtable.build_table(&self.input_stream);
 
         // parse input stream
-        let commands = self.parser.parse_input();
+        let commands = self.parser.parse_input(&self.input_stream);
 
         // TODO -- emit code based on commands read
         let code = self.code_generator.emit_code(&commands);
