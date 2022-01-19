@@ -93,20 +93,20 @@ impl Parser {
         Parser {}
     }
 
-    pub fn parse_input(&self, input_stream: &String) -> Vec<CommandType> {
-        let mut commands = vec![];
+    pub fn parse_input(&self, input_stream: &str) -> Vec<CommandType> {
+        input_stream
+            .lines()
+            .filter_map(|line| {
+                if line.len() == 0 || line.trim_start().starts_with("/") {
+                    return None;
+                }
 
-        for line in input_stream.lines() {
-            if line.len() == 0 {
-                continue;
-            }
-            match self.command_type(line) {
-                Some(cmd) => commands.push(cmd),
-                None => continue,
-            };
-        }
-
-        commands
+                match self.command_type(line) {
+                    Some(cmd) => Some(cmd),
+                    None => None,
+                }
+            })
+            .collect::<Vec<CommandType>>()
     }
 
     fn command_type(&self, line: &str) -> Option<CommandType> {
@@ -126,7 +126,7 @@ impl Parser {
             '(' => Some(CommandType::LCommand(
                 self.symbol(
                     &chars
-                        .take_while(|c| c.is_alphabetic())
+                        .take_while(|c| *c != ')')
                         .collect::<String>()
                         .to_string(),
                 ),

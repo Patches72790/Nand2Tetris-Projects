@@ -36,7 +36,7 @@ impl Config {
         })
     }
 
-    pub fn run(&self) {
+    pub fn run(&mut self) {
         if !DEBUG_MODE.unwrap_or("").is_empty() {
             for (i, line) in self.input_stream.lines().enumerate() {
                 println!("Line {}: {}", i, line);
@@ -60,6 +60,9 @@ impl Config {
             for (i, line) in code.iter().enumerate() {
                 println!("Codegen: #{}: {:?}", i, line);
             }
+
+            println!("\n!!!SYM TABLE OUTPUT!!!\n");
+            self.symtable.print_symtable();
         }
     }
 }
