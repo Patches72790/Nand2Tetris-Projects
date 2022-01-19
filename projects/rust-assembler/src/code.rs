@@ -20,6 +20,7 @@ impl CodeGenerator {
                         "Error! All variables should have been resolved to address by code gen time!"
                     ),
                 },
+                // L commands are only necessary in parser phase for tracking psuedo-labels
                 CommandType::LCommand(_) => None,
                 CommandType::CCommand(c_cmd_type) => {
                     if c_cmd_type.is_jmp_cmd {

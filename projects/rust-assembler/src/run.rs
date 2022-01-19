@@ -4,11 +4,13 @@ use crate::SymTable;
 use crate::DEBUG_MODE;
 use std::env::Args;
 use std::fs;
+use std::io::Write;
 
 pub struct Config {
     code_generator: CodeGenerator,
     symtable: SymTable,
     input_stream: String,
+    filename: String,
 }
 
 impl Config {
@@ -23,7 +25,7 @@ impl Config {
             None => return Err("Error reading filename from args."),
         };
 
-        let input_stream = match fs::read_to_string(filename) {
+        let input_stream = match fs::read_to_string(filename.clone()) {
             Ok(input) => input,
             Err(_) => return Err("Error reading input from file."),
         };
@@ -31,10 +33,11 @@ impl Config {
             code_generator: CodeGenerator::new(),
             symtable: SymTable::new(),
             input_stream,
+            filename,
         })
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> Result<(), &str> {
         if !DEBUG_MODE.unwrap_or("").is_empty() {
             for (i, line) in self.input_stream.lines().enumerate() {
                 println!("Line {}: {}", i, line);
@@ -44,8 +47,8 @@ impl Config {
         // TODO -- Build symbol table for labels/address mappings
         self.symtable.build_table(&self.input_stream);
 
-        let mut parser = Parser::new(&mut self.symtable);
         // parse input stream
+        let mut parser = Parser::new(&mut self.symtable);
         let commands = parser.parse_input(&self.input_stream);
 
         // TODO -- emit code based on commands read
@@ -63,5 +66,29 @@ impl Config {
             println!("\n!!!SYM TABLE OUTPUT!!!\n");
             self.symtable.print_symtable();
         }
+
+        // write output to filename given
+        self.write_to_output_file(&code)?;
+
+        Ok(())
+    }
+
+    fn write_to_output_file(&self, code: &Vec<String>) -> std::result::Result<(), &'static str> {
+        let filename = self.filename.clone() + &".hack".to_string();
+        let mut f = std::fs::File::create(filename.clone()).unwrap();
+
+        for line in code.iter() {
+            write!(f, "{}\n", line).unwrap();
+        }
+
+        Ok(())
+        //        let arr = code.iter().map(|s| s.as_bytes()).collect();
+        //        match OpenOptions::new().write(true).open(self.filename.clone()) {
+        //            Ok(file) => match file.write_all(arr) {
+        //                Ok(_) => Ok(()),
+        //                Err(_) => Err("Error writing to file"),
+        //            },
+        //            Error => Err("Error writing to file"),
+        //        }
     }
 }

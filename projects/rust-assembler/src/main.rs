@@ -10,5 +10,7 @@ fn main() {
         std::process::exit(1);
     });
 
-    config.run();
+    if let Err(msg) = config.run() {
+        println!("Error running rasm. Exiting with message:\n{}", msg);
+    }
 }
