@@ -6,7 +6,6 @@ use std::env::Args;
 use std::fs;
 
 pub struct Config {
-    parser: Parser,
     code_generator: CodeGenerator,
     symtable: SymTable,
     input_stream: String,
@@ -29,7 +28,6 @@ impl Config {
             Err(_) => return Err("Error reading input from file."),
         };
         Ok(Config {
-            parser: Parser::new(),
             code_generator: CodeGenerator::new(),
             symtable: SymTable::new(),
             input_stream,
@@ -46,8 +44,9 @@ impl Config {
         // TODO -- Build symbol table for labels/address mappings
         self.symtable.build_table(&self.input_stream);
 
+        let mut parser = Parser::new(&mut self.symtable);
         // parse input stream
-        let commands = self.parser.parse_input(&self.input_stream);
+        let commands = parser.parse_input(&self.input_stream);
 
         // TODO -- emit code based on commands read
         let code = self.code_generator.emit_code(&commands);

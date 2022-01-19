@@ -14,17 +14,15 @@ impl CodeGenerator {
                 CommandType::ACommand(addr_type) => match addr_type {
                     AddrType::Number(num) => {
                         let bits = CodeGenerator::to_bit_repr(num);
-                        let num_zeroes = 16 - bits.len();
-                        return vec!['0'; num_zeroes].iter().collect::<String>().to_string()
-                            + &bits;
+                        CodeGenerator::bits_to_command_string(&bits)
                     }
-                    AddrType::Symbol(sym) => "VAR:".to_string() + &sym.to_string(), // todo lookup symbol for addr/value
+                    AddrType::Symbol(_) => panic!(
+                        "Error! All variables should have been resolved to address by code gen time!"
+                    ),
                 },
                 CommandType::LCommand(addr_type) => match addr_type {
-                    AddrType::Number(_) => {
-                        panic!("Cannot have number address type for LCommand symbol!")
-                    }
-                    AddrType::Symbol(sym) => "SYMBOL".to_string(), // lookup symbol in symtable for addr/value
+                    AddrType::Number(_) => "".to_string(),
+                    AddrType::Symbol(_) => "SYMBOL".to_string(),
                 },
                 CommandType::CCommand(c_cmd_type) => {
                     if c_cmd_type.is_jmp_cmd {
@@ -59,8 +57,13 @@ impl CodeGenerator {
             .collect::<Vec<String>>()
     }
 
-    fn to_bit_repr(num: &i32) -> String {
-        if *num < 0 || ((1 << 15) & (*num)) > 0 {
+    fn bits_to_command_string(bits: &str) -> String {
+        let num_zeroes = 16 - bits.len();
+        vec!['0'; num_zeroes].iter().collect::<String>().to_string() + &bits
+    }
+
+    fn to_bit_repr(num: &u32) -> String {
+        if ((1 << 15) & (*num)) > 0 {
             panic!("Cannot convert negative number or number larger than 15 bits!");
         }
 
@@ -160,7 +163,6 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_bad_to_bit_repr() {
-        assert_eq!(CodeGenerator::to_bit_repr(&-16), "0".to_string());
         assert_eq!(CodeGenerator::to_bit_repr(&32768), "0".to_string());
     }
 

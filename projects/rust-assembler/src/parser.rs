@@ -1,4 +1,9 @@
-pub struct Parser {}
+use crate::SymTable;
+
+pub struct Parser<'a> {
+    symtable: &'a mut SymTable,
+    current_address: u32,
+}
 
 #[derive(Debug)]
 pub enum CommandType {
@@ -8,7 +13,7 @@ pub enum CommandType {
 }
 #[derive(Debug)]
 pub enum AddrType {
-    Number(i32),
+    Number(u32),
     Symbol(String), // impl TODO
 }
 #[derive(Debug)]
@@ -88,12 +93,15 @@ pub enum CompType {
     A(CompTypeA),
 }
 
-impl Parser {
-    pub fn new() -> Parser {
-        Parser {}
+impl Parser<'_> {
+    pub fn new(symtable: &mut SymTable) -> Parser {
+        Parser {
+            symtable,
+            current_address: 16,
+        }
     }
 
-    pub fn parse_input(&self, input_stream: &str) -> Vec<CommandType> {
+    pub fn parse_input(&mut self, input_stream: &str) -> Vec<CommandType> {
         input_stream
             .lines()
             .filter_map(|line| {
@@ -109,7 +117,7 @@ impl Parser {
             .collect::<Vec<CommandType>>()
     }
 
-    fn command_type(&self, line: &str) -> Option<CommandType> {
+    fn command_type(&mut self, line: &str) -> Option<CommandType> {
         let mut chars = line.chars();
         let first_char = chars.next().unwrap_or_else(|| {
             panic!("Error reading first character of line!");
@@ -124,7 +132,7 @@ impl Parser {
             'D' | 'M' | 'A' | '0' => Some(CommandType::CCommand(self.c_command(line))),
             // parsing for Label pseudo-instructions
             '(' => Some(CommandType::LCommand(
-                self.symbol(
+                self.pseudo_label(
                     &chars
                         .take_while(|c| *c != ')')
                         .collect::<String>()
@@ -135,22 +143,36 @@ impl Parser {
         }
     }
 
+    fn pseudo_label(&self, line: &str) -> AddrType {
+        match self.symtable.get_address(line) {
+            Some(addr) => AddrType::Number(addr),
+            None => panic!("Use of undeclared pseudo-label!"),
+        }
+    }
+
     /// Returns the symbol or decimal value of the current
     /// A command (@XXX or (XXX)).
     /// Also returns the symbol for the L Command label
-    fn symbol(&self, line: &str) -> AddrType {
-        let number_or_sym = match line.parse::<i32>() {
+    fn symbol(&mut self, line: &str) -> AddrType {
+        let number_or_sym = match line.parse::<u32>() {
             Ok(val) => Some(val),
             Err(_) => None,
         };
 
         match number_or_sym {
             Some(num) => AddrType::Number(num),
-            None => AddrType::Symbol(line.to_string()),
-            // TODO lookup address of symbol in symtable before adding
-            // case 1) user defined goto label
-            // case 2) predefined labels
-            // case 3) user defined variable
+            None => {
+                // if symbol exists, extract address and use it as ACommand's addr param
+                if let Some(addr) = self.symtable.get_address(line) {
+                    AddrType::Number(addr)
+                } else {
+                    // if user defined variable doesn't exist, add it to symtable
+                    let addr = self.current_address;
+                    self.current_address += 1;
+                    self.symtable.add_entry(line, addr);
+                    AddrType::Number(addr)
+                }
+            }
         }
     }
 
