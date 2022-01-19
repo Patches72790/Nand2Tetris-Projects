@@ -10,20 +10,17 @@ impl CodeGenerator {
     pub fn emit_code(&self, commands: &Vec<CommandType>) -> Vec<String> {
         commands
             .iter()
-            .map(|cmd| match cmd {
+            .filter_map(|cmd| match cmd {
                 CommandType::ACommand(addr_type) => match addr_type {
                     AddrType::Number(num) => {
                         let bits = CodeGenerator::to_bit_repr(num);
-                        CodeGenerator::bits_to_command_string(&bits)
+                        Some(CodeGenerator::bits_to_command_string(&bits))
                     }
                     AddrType::Symbol(_) => panic!(
                         "Error! All variables should have been resolved to address by code gen time!"
                     ),
                 },
-                CommandType::LCommand(addr_type) => match addr_type {
-                    AddrType::Number(_) => "".to_string(),
-                    AddrType::Symbol(_) => "SYMBOL".to_string(),
-                },
+                CommandType::LCommand(_) => None,
                 CommandType::CCommand(c_cmd_type) => {
                     if c_cmd_type.is_jmp_cmd {
                         let comp_part = match &c_cmd_type.comp {
@@ -37,7 +34,7 @@ impl CodeGenerator {
                         };
                         let comp_mnemonic = CodeGenerator::comp(&comp_part);
                         let jump_mnemonic = CodeGenerator::jump(&jmp_part);
-                        return "111".to_string() + &comp_mnemonic + "000" + &jump_mnemonic;
+                        Some("111".to_string() + &comp_mnemonic + "000" + &jump_mnemonic)
                     } else {
                         let comp_part = match &c_cmd_type.comp {
                             Some(part) => part,
@@ -50,7 +47,7 @@ impl CodeGenerator {
                         };
                         let comp_mnemonic = CodeGenerator::comp(&comp_part);
                         let dest_mnemonic = CodeGenerator::dest(&dest_part);
-                        return "111".to_string() + &comp_mnemonic + &dest_mnemonic + "000";
+                        Some("111".to_string() + &comp_mnemonic + &dest_mnemonic + "000")
                     }
                 }
             })
