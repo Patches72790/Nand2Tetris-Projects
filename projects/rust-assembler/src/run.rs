@@ -29,6 +29,7 @@ impl Config {
             Ok(input) => input,
             Err(_) => return Err("Error reading input from file."),
         };
+        let filename = filename.strip_suffix(".asm").unwrap().to_string();
         Ok(Config {
             code_generator: CodeGenerator::new(),
             symtable: SymTable::new(),
@@ -82,13 +83,5 @@ impl Config {
         }
 
         Ok(())
-        //        let arr = code.iter().map(|s| s.as_bytes()).collect();
-        //        match OpenOptions::new().write(true).open(self.filename.clone()) {
-        //            Ok(file) => match file.write_all(arr) {
-        //                Ok(_) => Ok(()),
-        //                Err(_) => Err("Error writing to file"),
-        //            },
-        //            Error => Err("Error writing to file"),
-        //        }
     }
 }
