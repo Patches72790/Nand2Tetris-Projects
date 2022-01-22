@@ -109,7 +109,8 @@ impl Parser<'_> {
                     return None;
                 }
 
-                match self.command_type(line) {
+                println!("Parsing current line: ---->{}", line.trim_start());
+                match self.command_type(line.trim_start()) {
                     Some(cmd) => Some(cmd),
                     None => None,
                 }
@@ -126,10 +127,17 @@ impl Parser<'_> {
         match first_char {
             // parsing for A instructions
             '@' => Some(CommandType::ACommand(
-                self.symbol(&chars.collect::<String>().to_string()),
+                self.symbol(
+                    &chars
+                        .take_while(|c| *c != ' ')
+                        .collect::<String>()
+                        .to_string(),
+                ),
             )),
             // parsing for comp instructions (dest, comp, jump)
-            'D' | 'M' | 'A' | '0' => Some(CommandType::CCommand(self.c_command(line))),
+            'D' | 'M' | 'A' | '0' => Some(CommandType::CCommand(self.c_command(
+                &(first_char.to_string() + &chars.take_while(|c| *c != ' ').collect::<String>()),
+            ))),
             // parsing for Label pseudo-instructions
             '(' => Some(CommandType::LCommand(
                 self.pseudo_label(

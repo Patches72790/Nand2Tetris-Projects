@@ -45,25 +45,26 @@ impl Config {
             }
         }
 
-        // TODO -- Build symbol table for labels/address mappings
+        // Build symbol table for labels/address mappings
         self.symtable.build_table(&self.input_stream);
 
         // parse input stream
         let mut parser = Parser::new(&mut self.symtable);
         let commands = parser.parse_input(&self.input_stream);
 
-        // TODO -- emit code based on commands read
+        if !DEBUG_MODE.unwrap_or("").is_empty() {
+            for command in &commands {
+                println!("Command: {:?}", command);
+            }
+        }
+
+        // emit code based on commands read
         let code = self.code_generator.emit_code(&commands);
 
         if !DEBUG_MODE.unwrap_or("").is_empty() {
-            for command in commands {
-                println!("Command: {:?}", command);
-            }
-
             for (i, line) in code.iter().enumerate() {
                 println!("Codegen: #{}: {:?}", i, line);
             }
-
             println!("\n!!!SYM TABLE OUTPUT!!!\n");
             self.symtable.print_symtable();
         }
