@@ -2,3 +2,5 @@
 target/**/*
 *.hack
 rasm
+.vscode/
+.vscode/**/*
