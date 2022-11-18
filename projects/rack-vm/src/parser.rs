@@ -46,6 +46,20 @@ pub struct RackVMParser {
     input: String,
 }
 
+pub trait Parser {
+    fn parse(&self) -> Result<Vec<OpCode>>;
+}
+
+impl Parser for RackVMParser {
+    fn parse(&self) -> Result<Vec<OpCode>> {
+        Ok(self
+            .input
+            .lines()
+            .map(|s| self.parse_opcode(s).unwrap())
+            .collect::<Vec<OpCode>>())
+    }
+}
+
 impl RackVMParser {
     pub fn new(input: &str) -> RackVMParser {
         RackVMParser {
