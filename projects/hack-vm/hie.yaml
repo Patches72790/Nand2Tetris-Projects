@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "hack-vm:lib"
+
+    - path: "./app/Main.hs"
+      component: "hack-vm:exe:hack-vm-exe"
+
+    - path: "./app/Paths_hack_vm.hs"
+      component: "hack-vm:exe:hack-vm-exe"
+
+    - path: "./test"
+      component: "hack-vm:test:hack-vm-test"
