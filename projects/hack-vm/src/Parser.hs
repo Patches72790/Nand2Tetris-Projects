@@ -1,9 +1,8 @@
 module Parser
   ( parseOpCodes,
+    OpCode (..),
   )
 where
-
-import Control.Applicative
 
 data OpCode
   = Arithmetic BinaryCommand
