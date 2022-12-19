@@ -21,7 +21,7 @@ impl CodeWriter for RackVMCodeWriter {
             .flat_map(|opcode| match opcode {
                 OpCode::Arithmetic(cmd) => RackVMCodeWriter::write_arithmetic_code(cmd),
                 OpCode::Push(segment, index) => RackVMCodeWriter::write_push_code(segment, index),
-                OpCode::Pop(segment, index) => vec![],
+                OpCode::Pop(segment, index) => RackVMCodeWriter::write_pop_code(segment, index),
                 other => panic!("Error unimplemented opcode in code writer: {:?}", other),
             })
             .collect::<Vec<String>>();
@@ -51,7 +51,9 @@ impl RackVMCodeWriter {
             other => todo!("Memory segment unimplemented in code writer: {:?}", other),
         }
     }
-    fn write_pop_code(segment: MemorySegment, index: u16) {}
+    fn write_pop_code(segment: &MemorySegment, index: &u16) -> Vec<String> {
+        todo!("Haven't implemented pop code yet!")
+    }
 
     fn write_arithmetic_code(cmd: &BinaryCommand) -> Vec<String> {
         match cmd {
