@@ -105,15 +105,12 @@ impl Parser<'_> {
         input_stream
             .lines()
             .filter_map(|line| {
-                if line.len() == 0 || line.trim_start().starts_with("/") {
+                if line.is_empty() || line.trim_start().starts_with('/') {
                     return None;
                 }
 
                 println!("Parsing current line: ---->{}", line.trim_start());
-                match self.command_type(line.trim_start()) {
-                    Some(cmd) => Some(cmd),
-                    None => None,
-                }
+                self.command_type(line.trim_start())
             })
             .collect::<Vec<CommandType>>()
     }
@@ -127,12 +124,7 @@ impl Parser<'_> {
         match first_char {
             // parsing for A instructions
             '@' => Some(CommandType::ACommand(
-                self.symbol(
-                    &chars
-                        .take_while(|c| *c != ' ')
-                        .collect::<String>()
-                        .to_string(),
-                ),
+                self.symbol(&chars.take_while(|c| *c != ' ').collect::<String>()),
             )),
             // parsing for comp instructions (dest, comp, jump)
             'D' | 'M' | 'A' | '0' => Some(CommandType::CCommand(self.c_command(
@@ -140,12 +132,7 @@ impl Parser<'_> {
             ))),
             // parsing for Label pseudo-instructions
             '(' => Some(CommandType::LCommand(
-                self.pseudo_label(
-                    &chars
-                        .take_while(|c| *c != ')')
-                        .collect::<String>()
-                        .to_string(),
-                ),
+                self.pseudo_label(&chars.take_while(|c| *c != ')').collect::<String>()),
             )),
             _ => None,
         }

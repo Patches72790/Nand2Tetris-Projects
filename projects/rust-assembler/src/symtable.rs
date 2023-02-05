@@ -42,7 +42,9 @@ impl SymTable {
         self.table.borrow_mut().insert(String::from("R13"), 13);
         self.table.borrow_mut().insert(String::from("R14"), 14);
         self.table.borrow_mut().insert(String::from("R15"), 15);
-        self.table.borrow_mut().insert(String::from("SCREEN"), 16384);
+        self.table
+            .borrow_mut()
+            .insert(String::from("SCREEN"), 16384);
         self.table.borrow_mut().insert(String::from("KBD"), 24576);
     }
 
