@@ -1,6 +1,8 @@
 module Parser
   ( parseOpCodes,
     OpCode (..),
+    BinaryCommand (..),
+    MemorySegment (..),
   )
 where
 
