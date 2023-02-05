@@ -1,13 +1,16 @@
 module Parser
   ( parseOpCodes,
     OpCode (..),
+    Command (..),
+    UnaryCommand (..),
+    ControlFlowCommand (..),
     BinaryCommand (..),
     MemorySegment (..),
   )
 where
 
 data OpCode
-  = Arithmetic BinaryCommand
+  = Expression Command
   | Push MemorySegment Int
   | Pop MemorySegment Int
   | Label String
@@ -18,14 +21,26 @@ data OpCode
   | Call String Int
   deriving (Show)
 
+data Command
+  = Binary BinaryCommand
+  | Unary UnaryCommand
+  | ControlFlow ControlFlowCommand
+  deriving (Show)
+
 data BinaryCommand
   = Plus
   | Minus
   | And
-  | Neg
   | Or
+  deriving (Show)
+
+data UnaryCommand
+  = Neg
   | Not
-  | Lt
+  deriving (Show)
+
+data ControlFlowCommand
+  = Lt
   | Gt
   | Eq
   deriving (Show)
@@ -45,15 +60,15 @@ parseOpCodes :: [[String]] -> Maybe [OpCode]
 parseOpCodes = mapM parse
 
 parse :: [String] -> Maybe OpCode
-parse ["add"] = Just (Arithmetic Plus)
-parse ["sub"] = Just (Arithmetic Minus)
-parse ["neg"] = Just (Arithmetic Neg)
-parse ["and"] = Just (Arithmetic And)
-parse ["or"] = Just (Arithmetic Or)
-parse ["not"] = Just (Arithmetic Not)
-parse ["eq"] = Just (Arithmetic Eq)
-parse ["lt"] = Just (Arithmetic Lt)
-parse ["gt"] = Just (Arithmetic Gt)
+parse ["add"] = Just (Expression (Binary Plus))
+parse ["sub"] = Just (Expression (Binary Minus))
+parse ["neg"] = Just (Expression (Unary Neg))
+parse ["and"] = Just (Expression (Binary And))
+parse ["or"] = Just (Expression (Binary Or))
+parse ["not"] = Just (Expression (Unary Not))
+parse ["eq"] = Just (Expression (ControlFlow Eq))
+parse ["lt"] = Just (Expression (ControlFlow Lt))
+parse ["gt"] = Just (Expression (ControlFlow Gt))
 parse (token : rest)
   | token == "push"
       || token == "pop" =

@@ -4,11 +4,13 @@ module CodeGen.Helpers
     writeCAssign,
     popStack,
     pushConstant,
-    writeArithmetic,
-    writeLogical,
+    writeBinary,
+    writeControlFlow,
     writeUnary,
   )
 where
+
+import Parser (ControlFlowCommand)
 
 writeALiteral :: Int -> String
 writeALiteral i = "@" ++ show i
@@ -25,8 +27,8 @@ writeCAssign lhs rhs = lhs ++ "=" ++ rhs
 -- perform binary cmd on contents
 -- store result back on stack
 --}
-writeArithmetic :: String -> [String]
-writeArithmetic cmd =
+writeBinary :: String -> [String]
+writeBinary cmd =
   concat
     [ popStack "R13",
       popStack "R14",
@@ -39,8 +41,8 @@ writeArithmetic cmd =
       pushStack "R14"
     ]
 
-writeLogical :: String -> [String]
-writeLogical cmd = []
+writeControlFlow :: ControlFlowCommand -> [String]
+writeControlFlow cmd = []
 
 writeUnary :: String -> [String]
 writeUnary cmd = []

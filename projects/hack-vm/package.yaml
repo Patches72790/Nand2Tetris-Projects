@@ -1,10 +1,10 @@
 name: hack-vm
 version: 0.1.0.0
-github: "githubuser/hack-vm"
+github: "patches72790/hack-vm"
 license: BSD3
-author: "Author name here"
-maintainer: "example@example.com"
-copyright: "2022 Author name here"
+author: "Patrick Harvey"
+maintainer: "patches72790@gmail.com"
+copyright: "2022 Patrick Harvey"
 
 extra-source-files:
   - README.md
@@ -21,6 +21,7 @@ description: Please see the README on GitHub at <https://github.com/githubuser/h
 
 dependencies:
   - base >= 4.7 && < 5
+  - process
 
 ghc-options:
   - -Wall
@@ -37,7 +38,7 @@ library:
   source-dirs: src
 
 executables:
-  hack-vm-exe:
+  hack-vm:
     main: Main.hs
     source-dirs: app
     ghc-options:

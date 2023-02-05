@@ -7,6 +7,8 @@ where
 
 import CodeWriter (writeCode)
 import Parser (parseOpCodes)
+import System.Environment (getArgs)
+import System.Exit (exitFailure)
 import System.IO
 
 wordsOfLines :: String -> [[String]]
@@ -18,20 +20,21 @@ writeCodeToFile (Just code) handle = hPutStr handle (unlines code)
 
 someFunc :: IO ()
 someFunc = do
-  handle <- openFile "test_files/simpleadd.vm" ReadMode
-  contents <- hGetContents handle
-  let allTheWords = wordsOfLines contents
-  print allTheWords
-  let tokens = parseOpCodes allTheWords
-  print "Tokens: "
-  print tokens
-  let code = writeCode tokens
+  args <- getArgs
+  case args of
+    [] -> do
+      print "Usage: ./vmtranslator [filename]"
+      exitFailure
+    (filename : _) -> do
+      print filename
 
-  print "Code generated:"
-  print code
+      contents <- readFile filename
+      print contents
 
-  outFileHandle <- openFile "test_files/simpleadd.asm" WriteMode
-  writeCodeToFile code outFileHandle
+      let code = writeCode $ parseOpCodes $ wordsOfLines contents
+      print code
 
-  hClose handle
-  hClose outFileHandle
+      let outFile = takeWhile (/= '.') filename
+      print outFile
+
+-- todo wriTe to file
