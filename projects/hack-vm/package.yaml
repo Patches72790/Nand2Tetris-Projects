@@ -60,3 +60,4 @@ tests:
     dependencies:
       - hack-vm
       - process
+      - hspec

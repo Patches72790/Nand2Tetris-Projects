@@ -2,6 +2,7 @@ import CodeWriter
 import Parser (parseOpCodes)
 import System.IO
 import System.Process (callCommand)
+import Test.Hspec
 
 writeCodeToFile :: Maybe [String] -> Handle -> IO ()
 writeCodeToFile Nothing _ = print "Cannot write no code to file"
@@ -28,3 +29,9 @@ main :: IO ()
 main = do
   testSimpleAdd
   print "Tests done"
+
+test1 :: IO ()
+test1 = hspec $ do
+  describe "Spec tester" $ do
+    it "runs the test" $ do
+      "abc" `shouldBe` ("abc" :: String)
